@@ -3,9 +3,16 @@ from flask_cors import CORS
 from agno.models.openai import OpenAIChat
 from agno.agent import Agent
 from dotenv import load_dotenv 
+from supabase import create_client
+import os
 
 #leitura da chave de api
 load_dotenv()
+#usando o getenv para pegar o arquivo específico
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_KEY")
+#Criando a conexão com o banco de dados, passando a URL e a KEY.
+supabase = create_client(supabase_url, supabase_key)
 #criar o nosso app
 app = Flask(__name__)
 #habilitar o cors
@@ -30,6 +37,19 @@ def pergunta():
     pergunta = dados['pergunta']
     resposta = agente.run(pergunta)
     return jsonify({"resposta":resposta.content})
+#criar a rota para reservar
+@app.route("/matricular", methods=['POST'])
+def matricular():
+    dados = request.get_json()
+    nova_matricula = {
+        "nome": dados['nome'],
+        "email": dados['email'],
+        "categoria": dados['categoria'],
+        "periodo": dados['periodo'],
+        "cpf": dados['cpf']
+    }
+    supabase.table("matricula").insert(nova_matricula).execute()
+    return jsonify ({"Mensagem": "Matricula realizada com sucesso!"})
 
 #rodar o app
 if __name__ == '__main__':
