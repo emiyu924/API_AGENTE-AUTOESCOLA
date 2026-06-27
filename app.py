@@ -45,7 +45,8 @@ def matricular():
         "nome": dados['nome'],
         "email": dados['email'],
         "categoria": dados['categoria'],
-        "periodo": dados['periodo']
+        "periodo": dados['periodo'],
+        "cpf": dados['cpf']
     }
     supabase.table("matricula").insert(nova_matricula).execute()
     return jsonify ({"Mensagem": "Matricula realizada com sucesso!"})
